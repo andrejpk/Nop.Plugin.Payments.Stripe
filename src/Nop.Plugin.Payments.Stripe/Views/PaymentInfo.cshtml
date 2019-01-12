@@ -1,0 +1,151 @@
+﻿@model Nop.Plugin.Payments.Stripe.Models.PaymentInfoModel
+@{
+    Layout = "";
+    //Html.AddScriptParts(ResourceLocation.Head, Nop.Plugin.Payments.Stripe.StripePaymentDefaults.PaymentFormScriptPath, excludeFromBundle: true);
+}
+@inject StripePaymentSettings stripePaymentSettings
+@inject Nop.Core.Domain.Orders.OrderSettings orderSettings
+@*<script src="https://js.stripe.com/v3/" id="stripescript"></script>*@
+
+<style type="text/css">
+    .StripeElement {
+        background-color: white;
+        height: 40px;
+        padding: 10px 12px;
+        border-radius: 4px;
+        border: 1px solid transparent;
+        box-shadow: 0 1px 3px 0 #e6ebf1;
+        -webkit-transition: box-shadow 150ms ease;
+        transition: box-shadow 150ms ease;
+    }
+
+    .StripeElement--focus {
+        box-shadow: 0 1px 3px 0 #cfd7df;
+    }
+
+    .StripeElement--invalid {
+        border-color: #fa755a;
+    }
+
+    .StripeElement--webkit-autofill {
+        background-color: #fefde5 !important;
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+        $.getScript('https://js.stripe.com/v3/', function () {
+
+            var onePageCheckout = @orderSettings.OnePageCheckoutEnabled.ToString().ToLower();
+            var submitForm = false;
+
+            $('.payment-info-next-step-button').attr('onclick', null);
+
+
+            console.log('stripe loaded');
+            // Create a Stripe client.
+            var stripe = Stripe('@stripePaymentSettings.PublishableKey');
+
+            // Create an instance of Elements.
+            var elements = stripe.elements();
+
+            // Custom styling can be passed to options when creating an Element.
+            // (Note that this demo uses a wider set of styles than the guide below.)
+            var style = {
+                base: {
+                    color: '#32325d',
+                    lineHeight: '18px',
+                    fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+                    fontSmoothing: 'antialiased',
+                    fontSize: '16px',
+                    '::placeholder': {
+                        color: '#aab7c4'
+                    }
+                },
+                invalid: {
+                    color: '#fa755a',
+                    iconColor: '#fa755a'
+                }
+            };
+
+            // Create an instance of the card Element.
+            var card = elements.create('card', { style: style, value: { postalCode: '@Model.PostalCode' }, hidePostalCode: true });
+
+            // Add an instance of the card Element into the `card-element` <div>.
+            card.mount('#card-element');
+
+            // Handle real-time validation errors from the card Element.
+            card.addEventListener('change', function (event) {
+                var displayError = document.getElementById('card-errors');
+                if (event.error) {
+                    displayError.textContent = event.error.message;
+                } else {
+                    displayError.textContent = '';
+                }
+            });
+
+
+
+            // Submit the form with the token ID.
+            function stripeTokenHandler(token) {
+                console.log('token received', token.id);
+                // Insert the token ID into the form so it gets submitted to the server
+
+                $('#@Html.IdFor(model => model.StripeToken)').val(token.id);
+
+                // Submit the form
+                if (onePageCheckout) {
+                    submitForm = false;
+                    PaymentInfo.save();
+                } else {
+                    submitForm = true;
+                }
+            }
+
+            $('input.payment-info-next-step-button').on('click', function (data) {
+                event.preventDefault();
+
+                stripe.createToken(card).then(function (result) {
+                    if (result.error) {
+                        // Inform the user if there was an error.
+                        var errorElement = document.getElementById('card-errors');
+                        errorElement.textContent = result.error.message;
+                        return false;
+                    } else {
+                        // Send the token to your server.
+                        stripeTokenHandler(result.token);
+                    }
+
+                    if (!submitForm) {
+                        return false;
+                    }
+                    else if (onePageCheckout) {
+                        submitForm = false;
+                        PaymentInfo.save();
+                    }
+                });
+
+
+            });
+        });
+    });
+
+</script>
+
+<input type="hidden" asp-for="StripeToken">
+<input type="hidden" asp-for="Errors">
+
+<form action="/charge" method="post" id="payment-form">
+    <div class="form-row">
+        <label for="card-element">
+            Credit or debit card
+        </label>
+        <div id="card-element">
+            <!-- A Stripe Element will be inserted here. -->
+        </div>
+
+        <!-- Used to display form errors. -->
+        <div id="card-errors" role="alert"></div>
+    </div>
+
+</form>

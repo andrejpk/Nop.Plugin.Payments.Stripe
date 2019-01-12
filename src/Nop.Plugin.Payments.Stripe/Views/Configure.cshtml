@@ -1,0 +1,74 @@
+﻿@model Nop.Plugin.Payments.Stripe.Models.ConfigurationModel
+@{
+    Layout = "_ConfigurePlugin";
+}
+@inject Nop.Core.IWebHelper webHelper
+
+<script>
+    $(document).ready(function () {
+  
+    });
+
+</script>
+
+<form asp-controller="PaymentStripe" asp-action="Configure" method="post">
+    <div class="panel-group">
+        <div class="panel panel-default">
+            <div class="panel-body">
+
+                <div class="form-group" id="SecretKey">
+                    <div class="col-md-3">
+                        <nop-label asp-for="SecretKey" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="SecretKey" asp-required="true" />
+                        <span asp-validation-for="SecretKey"></span>
+                    </div>
+                </div>
+
+                <div class="form-group" id="PublishableKey">
+                    <div class="col-md-3">
+                        <nop-label asp-for="PublishableKey" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="PublishableKey" asp-required="true" />
+                        <span asp-validation-for="PublishableKey"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="AdditionalFee" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="AdditionalFee" />
+                        <span asp-validation-for="AdditionalFee"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="AdditionalFeePercentage" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="AdditionalFeePercentage" />
+                        <span asp-validation-for="AdditionalFeePercentage"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-9 col-md-offset-3">
+                        <div class="input-group input-group-short">
+                            <div class="input-group-text">
+                                <input type="submit" name="save" class="btn btn-primary" value="@T("Admin.Common.Save")" />
+                            </div>
+                            @if (
+                            !string.IsNullOrEmpty(Model.SecretKey) || !string.IsNullOrEmpty(Model.PublishableKey))
+                            {
+
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
