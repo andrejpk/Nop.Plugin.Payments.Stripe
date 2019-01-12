@@ -21,32 +21,38 @@ namespace Nop.Plugin.Payments.Stripe.Controllers
         #region Fields
 
         private readonly ILocalizationService _localizationService;
+#if NOP420
         private readonly INotificationService _notificationService;
+#endif
         private readonly IPermissionService _permissionService;
         private readonly ISettingService _settingService;
         private readonly StripePaymentProcessor _stripePaymentManager;
         private readonly StripePaymentSettings _stripePaymentSettings;
 
-        #endregion
+#endregion
 
-        #region Ctor
+#region Ctor
 
         public PaymentStripeController(ILocalizationService localizationService,
+#if NOP420
             INotificationService notificationService,
+#endif
             IPermissionService permissionService,
             ISettingService settingService,
             StripePaymentSettings stripePaymentSettings)
         {
             this._localizationService = localizationService;
+#if NOP420
             this._notificationService = notificationService;
+#endif
             this._permissionService = permissionService;
             this._settingService = settingService;
             this._stripePaymentSettings = stripePaymentSettings;
         }
 
-        #endregion
+#endregion
 
-        #region Methods
+#region Methods
 
         [AuthorizeAdmin]
         [Area(AreaNames.Admin)]
@@ -89,12 +95,12 @@ namespace Nop.Plugin.Payments.Stripe.Controllers
             _stripePaymentSettings.AdditionalFee = model.AdditionalFee;
             _stripePaymentSettings.AdditionalFeePercentage = model.AdditionalFeePercentage;
             _settingService.SaveSetting(_stripePaymentSettings);
-
+#if NOP420
             _notificationService.SuccessNotification(_localizationService.GetResource("Admin.Plugins.Saved"));
-
+#endif
             return Configure();
         }
 
-        #endregion
+#endregion
     }
 }

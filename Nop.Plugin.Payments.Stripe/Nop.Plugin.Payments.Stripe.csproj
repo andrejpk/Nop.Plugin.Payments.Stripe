@@ -14,13 +14,13 @@
     <OutDir>$(OutputPath)</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\..\Presentation\Nop.Web\Plugins\Payments.Stripe</OutputPath>
+    <OutputPath>C:\src\Repos\nopCommerce\src\Presentation\Nop.Web\Plugins\Payments.Stripe\</OutputPath>
     <OutDir>$(OutputPath)</OutDir>
   </PropertyGroup>
   <!-- This target execute after "Build" target -->
   <Target Name="NopTarget" AfterTargets="Build">
     <!-- Delete unnecessary libraries from plugins path -->
-    <MSBuild Projects="$(MSBuildProjectDirectory)\..\..\Build\ClearPluginAssemblies.proj" Properties="PluginPath=$(MSBuildProjectDirectory)\$(OutDir)" Targets="NopClear" />
+    <MSBuild Projects="$(MSBuildProjectDirectory)..\..\..\nopCommerce\src\Build\ClearPluginAssemblies.proj" Properties="PluginPath=$(MSBuildProjectDirectory)\$(OutDir)" Targets="NopClear" />
   </Target>
   <ItemGroup>
     <None Remove="Content\styles.css" />
@@ -57,12 +57,12 @@
     <PackageReference Include="Stripe.net" Version="21.7.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\nopCommerce\src\Presentation\Nop.Web\Nop.Web.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <None Update="plugin.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Presentation\Nop.Web\Nop.Web.csproj" />
   </ItemGroup>
   <!-- This target execute after "Build" target -->
   <Target Name="NopTarget" AfterTargets="Build">
