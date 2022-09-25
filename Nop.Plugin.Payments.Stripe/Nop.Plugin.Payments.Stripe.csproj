@@ -56,7 +56,7 @@
      <ClearPluginAssemblies Include="$(MSBuildProjectDirectory)\..\..\nopCommerce\src\Build\ClearPluginAssemblies.proj" />
  </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Stripe.net" Version="21.9.0" />
+    <PackageReference Include="Stripe.net" Version="40.10.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\nopCommerce\src\Presentation\Nop.Web\Nop.Web.csproj" />
